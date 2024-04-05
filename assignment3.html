@@ -1,0 +1,221 @@
+<!-- StAuth10244: I Jay Patel, 000881881 certify that this material is my original work. No other person's work has been used without due acknowledgement. I have not made my work available to anyone else. -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dice Roller</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f7f7f7;
+        text-align: center;
+      }
+
+      .label {
+        font-size: 18px;
+        margin-bottom: 10px;
+      }
+
+      .number {
+        display: inline-block;
+        padding: 8px 20px;
+        font-size: 16px;
+        background-color: #dbdbdb;
+        color: #000000;
+        border-radius: 5px;
+        margin: 0 10px;
+      }
+
+      .number:hover {
+        background-color: #bababa;
+      }
+
+      .sides {
+        padding: 8px 20px;
+      }
+
+      .button {
+        margin: 0 5px;
+        padding: 8px 20px;
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: #fff;
+        font-size: 16px;
+        transition: background-color 0.3s;
+      }
+
+      .button:hover {
+        background-color: #0056b3;
+      }
+
+      .dice-container {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 20px;
+      }
+
+      .dice {
+        display: inline-block;
+        width: 60px;
+        height: 60px;
+        line-height: 60px;
+        text-align: center;
+        margin: 10px;
+        background-color: #f0f0f0;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        font-size: 32px;
+      }
+
+      .dice:hover {
+        background-color: #bababac0;
+        border-color: rgb(0, 0, 0);
+      }
+
+      .roll-button {
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <script type="text/babel">
+      // Dice Component
+      const Dice = ({ value, onClick }) => {
+        return (
+          <div className="dice" onClick={onClick}>
+            {value}
+          </div>
+        );
+      };
+
+      // App Component
+      class App extends React.Component {
+        state = {
+          numOfDice: 1,
+          numOfSides: 6,
+          diceValues: Array(1).fill(1),
+        };
+
+        // Increment number of dice
+        incrementNumOfDice = () => {
+          this.setState((prevState) => ({
+            numOfDice: prevState.numOfDice + 1,
+            diceValues: [...prevState.diceValues, 1],
+          }));
+        };
+
+        // Reset number of dice
+        resetNumOfDice = () => {
+          this.setState({
+            numOfDice: 1,
+            diceValues: [1],
+          });
+        };
+
+        // Increment number of sides
+        incrementNumOfSides = () => {
+          this.setState((prevState) => ({
+            numOfSides:
+              prevState.numOfSides < 20
+                ? prevState.numOfSides + 1
+                : prevState.numOfSides,
+          }));
+        };
+
+        // Decrement number of sides
+        decrementNumOfSides = () => {
+          this.setState((prevState) => ({
+            numOfSides:
+              prevState.numOfSides > 1
+                ? prevState.numOfSides - 1
+                : prevState.numOfSides,
+          }));
+        };
+
+        // Roll dice
+        rollDice = () => {
+          const { numOfSides, numOfDice } = this.state;
+          const newDiceValues = Array.from(
+            { length: numOfDice },
+            () => Math.floor(Math.random() * numOfSides) + 1
+          );
+          this.setState({ diceValues: newDiceValues });
+        };
+
+        // Increment dice value
+        incrementDiceValue = (index) => {
+          const { numOfSides, diceValues } = this.state;
+          const newValue =
+            diceValues[index] < numOfSides ? diceValues[index] + 1 : 1;
+          this.setState((prevState) => ({
+            diceValues: [
+              ...prevState.diceValues.slice(0, index),
+              newValue,
+              ...prevState.diceValues.slice(index + 1),
+            ],
+          }));
+        };
+
+        render() {
+          const { numOfDice, numOfSides, diceValues } = this.state;
+
+          return (
+            <div className="container">
+              <h2>Assignment 3</h2>
+              <div class="label">Number of Dice</div>
+              <span class="number" onClick={this.incrementNumOfDice}>
+                {numOfDice}
+              </span>
+              <button class="button" onClick={this.resetNumOfDice}>
+                Reset
+              </button>
+              <div class="dice-container">
+                {diceValues.map((value, index) => (
+                  <Dice
+                    key={index}
+                    value={value}
+                    onClick={() => this.incrementDiceValue(index)}
+                  />
+                ))}
+              </div>
+              <div class="label">Number of Sides</div>
+
+              <button class="button" onClick={this.decrementNumOfSides}>
+                -
+              </button>
+              <span class="sides">{numOfSides}</span>
+              <button class="button" onClick={this.incrementNumOfSides}>
+                +
+              </button>
+              <div class="roll-button">
+                <button class="button" onClick={this.rollDice}>
+                  Roll
+                </button>
+              </div>
+              <h4>&copy; 2024 - Jay Patel</h4>
+            </div>
+          );
+        }
+      }
+
+      // Render the App component
+      ReactDOM.render(<App />, document.getElementById("root"));
+    </script>
+  </body>
+</html>
